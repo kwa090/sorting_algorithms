@@ -1,58 +1,64 @@
 #include "sort.h"
 
 /**
- * swap - fn that swaps two nodes
- *
- * @head: pointer to a pointer to the head node to be sorted
- * @l: previous element
- * @r: next element
- *
- * Return: nothing
- */
-void swap(listint_t **head, listint_t *l, listint_t *r)
-{
-	listint_t *prev, *next;
-
-	prev = l->prev;
-	next = r->next;
-
-	if (prev != NULL)
-		prev->next = r;
-	else
-		*head = r;
-	l->prev = r;
-	l->next = next;
-	r->prev = prev;
-	r->next = l;
-	if (next)
-		next->prev = l;
-}
-
-
-
-/**
- *insertion_sort_list - function to sort a doubly linked list in
- *                      ascending order using insertion sort
- *@list: pointer to the array to sort
- *return - void
- **/
-
+  * insertion_sort_list - sorts a doubly linked list of integers
+  * @list: double pointer to linked list.
+  *
+  */
 void insertion_sort_list(listint_t **list)
 {
-	listint_t *i, *tmp;
-	/* check for null linked list */
-	if (list == NULL || *list == NULL || (*list)->next == NULL)
+	listint_t *head, *prev;
+
+	if (*list == NULL || list == NULL || (*list)->next == NULL)
+	{
+		return;
+	}
+
+	head = *list;
+
+	while (head)
+	{
+		prev = head->prev;
+
+		while (prev && prev->n > head->n)
+		{
+			swap(prev, head, list);
+			print_list(*list);
+			prev = head->prev;
+		}
+
+		head = head->next;
+	}
+}
+
+/**
+  * swap - swap two nodes of a list.
+  * @nodeA: node to be swapped.
+  * @nodeB: node to be swapped.
+  * @list: double pointer to list.
+  *
+  */
+void swap(listint_t *nodeA, listint_t *nodeB, listint_t **list)
+{
+	listint_t *temp1, *temp2;
+
+	if (nodeA == NULL || nodeB == NULL)
 		return;
 
-	for (i = (*list)->next; i && i->prev; i = i->next)
-	{
-		for (; i && i->prev && i->n < i->prev->n;
-		     i = i->prev)
-		{
-			tmp = i->prev;
-			swap(list, tmp, i);
-			print_list(*list);
-			i = i->next;
-		}
-	}
+	temp1 = nodeA->prev;
+	temp2 = nodeB->next;
+
+	if (temp1)
+		temp1->next = nodeB;
+
+	if (temp2)
+		temp2->prev = nodeA;
+
+	nodeA->next = temp2;
+	nodeA->prev = nodeB;
+	nodeB->next = nodeA;
+	nodeB->prev = temp1;
+
+	if (temp1 == NULL)
+		*list = nodeB;
 }
